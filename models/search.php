@@ -34,17 +34,17 @@ class Search
 	function name() { return '';}
 	function run_search( $search) { return false; }
 
-	function search_and_replace( $search, $replace, $limit, $offset, $orderby, $save = false)
+	function search_and_replace( $search, $replace, $filter, $limit, $offset, $orderby, $save = false)
 	{
 		$this->replace = $replace;
-		$results = $this->search_for_pattern( $search, $limit, $offset, $orderby);
+		$results = $this->search_for_pattern( $search, $filter, $limit, $offset, $orderby);
 
 		if( $results !== false && $save)
 			$this->replace( $results);
 		return $results;
 	}
 
-	function search_for_pattern( $search, $limit, $offset, $orderby ) {
+	function search_for_pattern( $search, $filter, $limit, $offset, $orderby ) {
 		if ( !in_array( $orderby, array( 'asc', 'desc' ) ) )
 			$orderby = 'asc';
 
@@ -64,10 +64,10 @@ class Search
 				if ( $valid === false )
 					return $this->regex_error;
 
-				return $this->find( $search, $limit, $offset, $orderby );
+				return $this->find( $search, $filter, $limit, $offset, $orderby );
 			}
 			else
-				return $this->find( '@'.preg_quote( $search, '@' ).'@', $limit, $offset, $orderby );
+				return $this->find( '@'.preg_quote( $search, '@' ).'@', $filter, $limit, $offset, $orderby );
 		}
 
 		return __( "No search pattern", 'search-regex' );

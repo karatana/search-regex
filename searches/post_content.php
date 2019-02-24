@@ -1,16 +1,39 @@
 <?php
 
 class SearchPostContent extends Search {
-	function find( $pattern, $limit, $offset, $orderby ) {
+	function find( $pattern, $filter, $limit, $offset, $orderby ) {
 		global $wpdb;
 
-		$sql = "SELECT ID, post_content, post_title FROM {$wpdb->posts} WHERE post_status != 'inherit' AND post_type IN ('post','page') ORDER BY ID ".$orderby;
+		$args = [
+			'post_status' 	=> ['publish', 'pending', 'draft', 'auto-draft', 'future', 'private'],
+			'orderby' 		=> 'ID',
+			'order' 		=> $orderby,
+			'tax_query' 	=> [],
+		];
 
-		if ( $limit > 0 )
-			$sql .= $wpdb->prepare( " LIMIT %d,%d", $offset, $limit );
+		// category filter
+		if (isset($filter['category'])) {
+			$args['post_type'] = ['post'];
+			$args['tax_query'][] = [
+				'taxonomy' 	=> 'category',
+				'field'		=> 'slug',
+				'terms'		=> $filter['category'],
+			];
+		} else {
+			$args['post_type'] = ['post', 'page'];
+		}
+
+		if ($limit > 0) {
+			$args['posts_per_page'] = $limit;
+			$args['offset'] = $offset;
+		} else {
+			$args['nopaging'] = true;
+		}
+
+		$query = new WP_Query($args);
 
 		$results = array();
-		$posts   = $wpdb->get_results( $sql );
+		$posts   = $query->posts;
 
 		if ( count( $posts ) > 0 ) {
 			foreach ( $posts as $post ) {

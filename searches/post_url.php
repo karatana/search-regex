@@ -1,7 +1,7 @@
 <?php
 
 class SearchPostURL extends Search {
-	function find ($pattern, $limit, $offset, $orderby) {
+	function find ($pattern, $filter, $limit, $offset, $orderby) {
 		global $wpdb;
 
 		$results = array();

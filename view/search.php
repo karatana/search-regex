@@ -35,6 +35,16 @@
 						<option <?php selected( $orderby, 'asc' ); ?>value="asc"><?php _e( 'Ascending', 'search-regex' ); ?></option>
 						<option <?php selected( $orderby, 'desc' ); ?>value="desc"><?php _e( 'Descending', 'search-regex' ); ?></option>
 					</select>
+
+					<strong><?php _e( 'Category (for Post Content only)', 'search-regex' ); ?>:</strong>
+					<?php $category_old = isset( $_POST['category'] ) ? $_POST['category'] : null; ?>
+					<select name="category">
+						<?php foreach ( $categories AS $category ) : ?>
+							<option value="<?php echo $category->slug; ?>" <?php if ( !empty( $category_old ) && $category_old === $category->slug ) echo ' selected="selected"' ?>>
+								<?php echo esc_attr( $category->slug ) ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
 				</td>
 			</tr>
 			<tr>

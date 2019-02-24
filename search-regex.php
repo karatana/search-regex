@@ -46,6 +46,11 @@ class SearchRegex {
 
 	function admin_screen() {
 		$searches = Search::get_searches();
+		$categories = get_terms([
+			'taxonomy' => 'category',
+			'hide_empty' => true,
+			'orderby'	=> 'term_order',
+		]);
 
 		if ( isset( $_POST['search_pattern'] ) && ! wp_verify_nonce( $_POST['search-regex-nonce'], 'search' ) ) {
 			return;
@@ -68,9 +73,15 @@ class SearchRegex {
 			$orderby = 'desc';
 		}
 
-		$limit  = isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 10;
-		$offset = 0;
-		$source = isset( $_POST['source'] ) ? stripslashes( $_POST['source'] ) : '';
+		$limit  	= isset( $_POST['limit'] ) ? intval( $_POST['limit'] ) : 10;
+		$offset 	= 0;
+		$source 	= isset( $_POST['source'] ) ? stripslashes( $_POST['source'] ) : '';
+		$category	= isset( $_POST['category'] ) ? stripslashes( $_POST['category'] ) : null;
+
+		$filter = [];
+		if ( !empty( $category ) ) {
+			$filter['category'] = $category;
+		}
 
 		if ( Search::valid_search( $source ) && ( isset( $_POST['search'] ) || isset( $_POST['replace'] ) || isset( $_POST['replace_and_save'] ) ) ) {
 			$klass    = stripslashes( $source );
@@ -90,13 +101,13 @@ class SearchRegex {
 			$results = array();
 
 			if ( isset( $_POST['search'] ) ) {
-				$results = $searcher->search_for_pattern( $search_pattern, $limit, $offset, $orderby );
+				$results = $searcher->search_for_pattern( $search_pattern, $filter, $limit, $offset, $orderby );
 			}
 			elseif ( isset( $_POST['replace'] ) ) {
-				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $limit, $offset, $orderby );
+				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $filter, $limit, $offset, $orderby );
 			}
 			elseif ( isset( $_POST['replace_and_save'] ) ) {
-				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $limit, $offset, $orderby, true );
+				$results = $searcher->search_and_replace( $search_pattern, $replace_pattern, $filter, $limit, $offset, $orderby, true );
 			}
 
 			if ( ! is_array( $results ) ) {
@@ -110,14 +121,28 @@ class SearchRegex {
 <?php
 			}
 
-			$this->render( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
+			$this->render( 'search', array(
+				'search' => $search_pattern,
+				'replace' => $replace_pattern,
+				'searches' => $searches,
+				'categories' => $categories,
+				'source' => $source
+				)
+			);
 
 			if ( is_array( $results ) && ! isset( $_POST['replace_and_save'] ) ) {
 				$this->render( 'results', array( 'search' => $searcher, 'results' => $results ) );
 			}
 		}
 		else {
-			$this->render( 'search', array( 'search' => $search_pattern, 'replace' => $replace_pattern, 'searches' => $searches, 'source' => $source ) );
+			$this->render( 'search', array(
+				'search' => $search_pattern,
+				'replace' => $replace_pattern,
+				'categories' => $categories,
+				'searches' => $searches,
+				'source' => $source
+				)
+			);
 		}
 	}
 
