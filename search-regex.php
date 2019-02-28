@@ -47,9 +47,8 @@ class SearchRegex {
 	function admin_screen() {
 		$searches = Search::get_searches();
 		$categories = get_terms([
-			'taxonomy' => 'category',
-			'hide_empty' => true,
-			'orderby'	=> 'term_order',
+			'taxonomy' 	=> 'category',
+			'orderby'	=> 'slug',
 		]);
 
 		if ( isset( $_POST['search_pattern'] ) && ! wp_verify_nonce( $_POST['search-regex-nonce'], 'search' ) ) {
