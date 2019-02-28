@@ -59,7 +59,7 @@
 			<tr>
 			  <th width="150" valign="top"><?php _e( 'Replace pattern', 'search-regex' ) ?></th>
 				<td>
-				  <input class="term" type="text" name="replace_pattern" value="<?php esc_attr_e( $replace ) ?>"/><br/>
+				  <textarea class="term" rows="3" name="replace_pattern"><?php esc_attr_e( $replace ) ?></textarea><br/>
 				</td>
 			</tr>
 			<tr>
