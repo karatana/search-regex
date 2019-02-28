@@ -39,6 +39,9 @@
 					<strong><?php _e( 'Category (for Post Content only)', 'search-regex' ); ?>:</strong>
 					<?php $category_old = isset( $_POST['category'] ) ? $_POST['category'] : null; ?>
 					<select name="category">
+						<option value="" <?php if ( empty( $category_old )) echo ' selected="selected"' ?>>
+							<?php _e( '(not selected)', 'search-regex' ); ?>
+						</option>
 						<?php foreach ( $categories AS $category ) : ?>
 							<option value="<?php echo $category->slug; ?>" <?php if ( !empty( $category_old ) && $category_old === $category->slug ) echo ' selected="selected"' ?>>
 								<?php echo esc_attr( $category->slug ) ?>
